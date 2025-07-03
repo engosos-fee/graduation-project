@@ -12,16 +12,13 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-        policy =>
-        {
-            policy.WithOrigins(
-                "http://localhost:3000", // لو بتجرب محلي
-                "https://graduation-project-wcad.onrender.com" // رابط الـ API نفسه
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()      // يسمح لكل الدومينات
+            .AllowAnyMethod()      // يسمح بكل أنواع الطلبات: GET, POST, PUT, DELETE...
+            .AllowAnyHeader();     // يسمح بأي Header (مثل Authorization)
+    });
 });
 
 // Add services to the container.
@@ -62,7 +59,7 @@ app.UseSwaggerUI();
 
 // ترتيب الميدل وير مهم
 app.UseRouting();
-app.UseCors(MyAllowSpecificOrigins);
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
