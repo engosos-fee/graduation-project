@@ -10,3 +10,6 @@ obj/
 *.exe
 out/
 .config/
+
+
+Server=tcp:osama-sql-server2.database.windows.net,1433;Initial Catalog=graduation_db;Persist Security Info=False;User ID=sqladmin;Password=AA123321aa@#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
