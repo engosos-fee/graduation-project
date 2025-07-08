@@ -19,7 +19,6 @@ namespace project_graduation.Services
         {
             var fromEmail = _config["EmailSettings:From"];
             var password = _config["EmailSettings:Password"];
-            //local host --> http://localhost:5062/api/Auth/confirm-email?email={toEmail}&token={token}
             var link = $"https://graduation-project-wcad.onrender.com/api/Auth/confirm-email?email={toEmail}&token={token}";
 
             var subject = "Confirm your email";
@@ -45,7 +44,6 @@ namespace project_graduation.Services
         {
             var fromEmail = _config["EmailSettings:From"];
             var password = _config["EmailSettings:Password"];
-            // local --> http://localhost:5062/reset-password.html?email={toEmail}&token={token}
             var link = $"https://secure-scan-jade.vercel.app/reset-password?email={toEmail}&token={token}";
 
             var subject = "Password Reset Request";
