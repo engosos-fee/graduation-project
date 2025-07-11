@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using project_graduation.Middlewares;
 using project_graduation.Model;
 using project_graduation.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddMemoryCache();
 
 // CORS configuration
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -52,6 +55,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddAuthorization();
 
+
 var app = builder.Build();
 
 // Enable Swagger in all environments
@@ -61,6 +65,8 @@ app.UseSwaggerUI();
 // Middleware pipeline order is important
 app.UseRouting();
 app.UseCors("AllowAll");
+app.UseRateLimitPerIp();
+app.UseMiddleware<project_graduation.Middlewares.RateLimitPerIpMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

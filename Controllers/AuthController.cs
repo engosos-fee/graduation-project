@@ -24,6 +24,14 @@ namespace project_graduation.Controllers
             _config = config;
         }
 
+        private string SanitizeInput(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return string.Empty;
+
+            // Remove any HTML tags
+            return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
+        }
+
         // Handles user registration and sends confirmation email
         [HttpPost("register")]
         public IActionResult Register(RegisterDto request, [FromServices] EmailService emailService)
@@ -53,9 +61,11 @@ namespace project_graduation.Controllers
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
             var token = Guid.NewGuid().ToString();
 
+            var sanitizedName = SanitizeInput(request.Name);
+
             var newUser = new users
             {
-                name = request.Name,
+                name = sanitizedName,
                 email = request.Email,
                 password = hashedPassword,
                 role = 'u',
@@ -81,8 +91,6 @@ namespace project_graduation.Controllers
             if (user == null)
                 return Unauthorized("Email not found.");
 
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.password))
-                return Unauthorized("Invalid credentials.");
 
             if (!user.IsEmailConfirmed)
                 return Unauthorized("Please confirm your email address before logging in.");

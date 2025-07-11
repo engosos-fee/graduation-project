@@ -1,18 +1,18 @@
 ﻿namespace project_graduation.DTOclass
 {
-    // DTO used to receive URL data from the frontend
+    // This DTO is used to receive scanning request data from the frontend
     public class data_from_front
     {
-        // Identifier (optional, may be unused during creation)
+        // The unique identifier for the data entry (can be auto-generated or unused in request)
         public int Id { get; set; }
 
-        // The URL to be scanned or saved
+        // The URL to be scanned
         public string Url { get; set; }
 
-        // The date the URL was submitted
+        // The date when the scan was requested or submitted
         public DateTime Date { get; set; }
 
-        // The ID of the user submitting the URL
+        // The ID of the user who submitted the scan
         public int UserId { get; set; }
     }
 }

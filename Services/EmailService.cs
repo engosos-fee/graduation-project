@@ -19,7 +19,7 @@ namespace project_graduation.Services
         {
             var fromEmail = _config["EmailSettings:From"];
             var password = _config["EmailSettings:Password"];
-            var link = $"https://graduation-project-wcad.onrender.com/api/Auth/confirm-email?email={toEmail}&token={token}";
+            var link = $"http://localhost:5062/api/Auth/confirm-email?email={toEmail}&token={token}";
 
             var subject = "Confirm your email";
             var body = $"<p>Hi {userName},</p><p>Please click the link below to confirm your email (valid for 20 minutes):</p><a href='{link}'>Confirm Email</a>";
@@ -44,7 +44,7 @@ namespace project_graduation.Services
         {
             var fromEmail = _config["EmailSettings:From"];
             var password = _config["EmailSettings:Password"];
-            var link = $"https://secure-scan-jade.vercel.app/reset-password?email={toEmail}&token={token}";
+            var link = $"http://localhost:5062/reset-password.html?email={toEmail}&token={token}";
 
             var subject = "Password Reset Request";
             var body = $"<p>Hi {userName},</p><p>Please click the link below to reset your password (valid for 20 minutes):</p><a href='{link}'>Reset Password</a>";

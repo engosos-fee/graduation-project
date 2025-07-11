@@ -1,15 +1,17 @@
-﻿namespace project_graduation.DTOclass
+﻿using System.Collections.Generic;
+
+namespace project_graduation.DTOclass
 {
-    // DTO used to send user data and scan results to the frontend
+    // DTO used to return user information along with their scan results
     public class user_data_dto
     {
-        // The user's unique ID
+        // User ID
         public int id_user { get; set; }
 
-        // The user's name
+        // User's name
         public string name_user { get; set; }
 
-        // List of scan result strings associated with the user
-        public List<string> result { get; set; }
+        // List of scan results associated with the user
+        public List<ScanResultDto> scans { get; set; }
     }
 }
