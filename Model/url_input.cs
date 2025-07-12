@@ -22,5 +22,8 @@ namespace project_graduation.Model
         // Navigation property linking to the user entity
         [ForeignKey(nameof(userid))]
         public virtual users Users { get; set; }
+
+        // Status of the scan (Pending, Completed, Failed, etc.)
+        public string Status { get; set; } = "Pending";
     }
 }

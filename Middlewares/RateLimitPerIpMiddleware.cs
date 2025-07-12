@@ -7,41 +7,40 @@ namespace project_graduation.Middlewares
         private readonly RequestDelegate _next;
         private readonly IMemoryCache _cache;
 
-        // Time window for counting requests (e.g., 1 minute)
-        private static readonly TimeSpan TimeWindow = TimeSpan.FromMinutes(1);
+        // Rate limiting settings
+        private static readonly TimeSpan TimeWindow = TimeSpan.FromSeconds(3);
+        private static readonly TimeSpan PerRequestDelay = TimeSpan.FromSeconds(3);
+        private const int MaxRequestsPerWindow = 100;
 
-        // Delay between requests to the same endpoint (e.g., 60 seconds)
-        private static readonly TimeSpan PerRequestDelay = TimeSpan.FromSeconds(60);
-
-        // Max number of requests allowed in TimeWindow
-        private const int MaxRequestsPerWindow = 10;
-
-        // Paths excluded from the 60-second delay (but still counted in rate limit)
+        // Excluded paths from rate limiting
         private readonly List<string> _excludedFromDelayPaths = new()
         {
             "/api/auth/login",
             "/api/auth/register",
-            "/api/auth/forgot-password"
+            "/api/passwordcheck"
         };
 
+        // Constructor to initialize dependencies
         public RateLimitPerIpMiddleware(RequestDelegate next, IMemoryCache cache)
         {
             _next = next;
             _cache = cache;
         }
 
+        // Middleware logic to handle rate limiting
         public async Task InvokeAsync(HttpContext context)
         {
-            var ip = context.Connection.RemoteIpAddress?.ToString();
-            var path = context.Request.Path.Value?.ToLower();
+            var ip = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var path = context.Request.Path.Value?.ToLower().TrimEnd('/');
 
+            // Skip processing if IP or path is missing
             if (string.IsNullOrEmpty(ip) || string.IsNullOrEmpty(path))
             {
                 await _next(context);
                 return;
             }
 
-            // 1. Apply 60-second delay per endpoint (unless excluded)
+            // 1. Apply 60-second delay if not in excluded paths
             if (!_excludedFromDelayPaths.Contains(path))
             {
                 var delayKey = $"RateLimit:{ip}:{path}";
@@ -55,25 +54,24 @@ namespace project_graduation.Middlewares
                 _cache.Set(delayKey, true, PerRequestDelay);
             }
 
-            // 2. Apply general rate limit: max 10 requests per minute
+            // 2. General rate limit: max 10 requests per minute per IP
             var countKey = $"RateCount:{ip}";
-            int requestCount = _cache.Get<int>(countKey);
+            int currentCount = _cache.Get<int>(countKey);
 
-            if (requestCount >= MaxRequestsPerWindow)
+            if (currentCount >= MaxRequestsPerWindow)
             {
                 context.Response.StatusCode = 429;
-                //--> Maximum 10 requests per minute.
-                await context.Response.WriteAsync("Rate limit exceeded");
+                // Maximum 10 requests per minute
+                await context.Response.WriteAsync("API Rate limit exceeded.");
                 return;
             }
 
-            _cache.Set(countKey, requestCount + 1, TimeWindow);
-
+            _cache.Set(countKey, currentCount + 1, TimeWindow);
             await _next(context);
         }
     }
 
-    // Extension method for cleaner registration in Program.cs
+    // Extension method to add middleware to pipeline
     public static class RateLimitPerIpMiddlewareExtensions
     {
         public static IApplicationBuilder UseRateLimitPerIp(this IApplicationBuilder builder)

@@ -66,7 +66,6 @@ app.UseSwaggerUI();
 app.UseRouting();
 app.UseCors("AllowAll");
 app.UseRateLimitPerIp();
-app.UseMiddleware<project_graduation.Middlewares.RateLimitPerIpMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
